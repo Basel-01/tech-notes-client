@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGetNotesQuery } from "../../app/api/notesApiSlice";
 import { useGetUsersQuery } from "../../app/api/usersApiSlice";
@@ -30,8 +31,9 @@ const EditNote: React.FC = () => {
       };
     },
   });
+  const [isDeletingNote, setIsDeletingNote] = useState<boolean>(false);
 
-  if (isNoteLoading || isUsersLoading) {
+  if (isNoteLoading || isUsersLoading || isDeletingNote) {
     return <Loading />;
   }
 
@@ -56,9 +58,13 @@ const EditNote: React.FC = () => {
   }
 
   return canRetrieveUsers && users ? (
-    <EditNoteForm note={note} users={users} />
+    <EditNoteForm
+      note={note}
+      users={users}
+      setIsDeletingNote={setIsDeletingNote}
+    />
   ) : (
-    <EditNoteForm note={note} />
+    <EditNoteForm note={note} setIsDeletingNote={setIsDeletingNote} />
   );
 };
 

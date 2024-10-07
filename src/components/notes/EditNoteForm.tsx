@@ -17,9 +17,14 @@ import type { CustomError } from "../../app/api/apiSlice";
 type EditNoteFormProps = {
   note: Note;
   users?: { id: string; username: string }[];
+  setIsDeletingNote: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const EditNoteForm: React.FC<EditNoteFormProps> = ({ note, users }) => {
+const EditNoteForm: React.FC<EditNoteFormProps> = ({
+  note,
+  users,
+  setIsDeletingNote,
+}) => {
   const { canEditAllNoteFields, canEditNoteCompletionOnly, canDeleteNote } =
     useRolePermissions({});
   const [
@@ -96,10 +101,12 @@ const EditNoteForm: React.FC<EditNoteFormProps> = ({ note, users }) => {
 
   const handleDelete = async () => {
     try {
+      setIsDeletingNote(true);
       await deleteNote(note.id).unwrap();
       notify("Note deleted successfully", "success");
       navigate("/dash/notes");
     } catch (error: any) {
+      setIsDeletingNote(false);
       if (error instanceof ValidationError) {
         setErrorMessage(error.errors.join("\n"));
       } else if (error?.data?.message) {
